@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import { diffWords } from "diff";
+import InputIndex from "./components/InputIndex";
 
 import "./App.css";
 
@@ -10,78 +11,100 @@ import "./App.css";
 const data = `Lorem Ipsum`;
 
 function App() {
-  const [editorHtml, setEditorHtml] = useState("");
-  const [initialText, setInitialText] = useState("");
-  const [quill, setQuill] = useState(null);
+  return (
+    <>
+      <InputIndex/>
+    </>
+  )
+}
 
-  const highlightChanges = () => {
-    const changes = getDiff();
-    console.log({changes})
-    if (!changes.length) return;
+// function App() {
+//   const [editorHtml, setEditorHtml] = useState("");
+//   const [initialText, setInitialText] = useState("");
+//   const [quill, setQuill] = useState(null);
 
-    // console.log({ initialText });
-    // console.log({ editorHtml });
-    // console.log({ changes });
+//   const findInsertionIndex = (currentText, newText, currentIndex) => {
+//     const remainingText = currentText.slice(currentIndex);
+//     return remainingText.indexOf(newText) !== -1
+//       ? currentIndex + remainingText.indexOf(newText)
+//       : -1;
+//   };
 
-    let currentIndex = 0;
-    changes.forEach((change) => {
-      if (change.added) {
-        const newText = change.value.replace(/<[^>]*>/g, "");
-        const currentTextPlain = editorHtml.replace(/<[^>]*>/g, "");
-        const indexInCurrentText = currentTextPlain.indexOf(newText);
+//   const highlightChanges = () => {
+//     const changes = getDiff();
+//     console.log({changes})
+//     if (!changes.length) return;
 
-        if (indexInCurrentText !== -1) {
-          const length = newText.length;
-          quill.formatText(indexInCurrentText, length, {
-            background: "yellow",
-          });
-          currentIndex = indexInCurrentText + length;
-        }
-      } else {
-        currentIndex += change.value.length;
-      }
-    });
-  };
+//     // console.log({ initialText });
+//     // console.log({ editorHtml });
+//     // console.log({ changes });
 
-  const getDiff = () => {
-    const initialTextPlain = initialText;
-    const currentTextPlain = editorHtml.replace(/<[^>]*>/g, "");
-    return diffWords(initialTextPlain, currentTextPlain);
-  };
+//     let currentIndex = 0;
+//     changes.forEach((change) => {
+//       if (change.added) {
+//         console.log({changes})
+//         const newText = change.value.replace(/<[^>]*>/g, "");
+//         const currentTextPlain = editorHtml.replace(/<[^>]*>/g, "");
+//         const indexInCurrentText = findInsertionIndex(currentTextPlain, newText, currentIndex);
 
-  useEffect(() => {
-    const q = new Quill("#editor", {
-      theme: "snow",
-      modules: {
-        toolbar: false,
-      },
-      placeholder: "Type here...",
-    });
+//         if (indexInCurrentText !== -1) {
+//           const length = newText.length;
+//           quill.formatText(indexInCurrentText, length, {
+//             background: "yellow",
+//           });
+//           currentIndex = indexInCurrentText + length;
+//         }
+//       } else {
+//         currentIndex += change.value.length;
+//       }
+//     });
+//   };
 
-    setInitialText(data);
-    setQuill(q);
+//   const getDiff = () => {
+//     const initialTextPlain = initialText;
+//     const currentTextPlain = editorHtml.replace(/<[^>]*>/g, "");
+    
+//     const diffArray =  diffWords(initialTextPlain, currentTextPlain);
 
-    q.setText(data);
-    q.on("text-change", () => {
-      const currentText = q.root.innerHTML;
-      setEditorHtml(currentText);
-    });
-  }, []);
+//     const addedParts = diffArray
+//     .filter((change) => change.added)
 
-  useEffect(() => {
-    highlightChanges();
-  }, [editorHtml]);
+//     return addedParts
+//   };
+
+//   useEffect(() => {
+//     const q = new Quill("#editor", {
+//       theme: "snow",
+//       modules: {
+//         toolbar: false,
+//       },
+//       placeholder: "Type here...",
+//     });
+
+//     setInitialText(data);
+//     setQuill(q);
+
+//     q.setText(data);
+//     q.on("text-change", () => {
+//       const currentText = q.root.innerHTML;
+//       setEditorHtml(currentText);
+//     });
+//   }, []);
+
+//   useEffect(() => {
+//     highlightChanges();
+//   }, [editorHtml]);
 
   
 
-  return (
-    <>
-      <h1>Type Here</h1>
-      <div className="App">
-        <div id="editor" style={{ height: "200px"}} />
-      </div>
-    </>
-  );
-}
+//   return (
+//     <>
+//       <h1>Type Here</h1>
+//       <div className="App">
+//         <div id="editor" style={{ height: "200px"}} />
+//       </div>
+//     </>
+//   );
+// }
 
 export default App;
