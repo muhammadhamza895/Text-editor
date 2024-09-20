@@ -13,11 +13,22 @@ function InputIndex() {
 
   const highlightChanges = () => {
     const plainInitialText = initialText;
-    const plainCurrentText = quillRef.current.getText();
-    const addedCharacters = getNewCharactersWithIndices(plainInitialText,plainCurrentText)
-    addedCharacters?.forEach(newChar=>{
+    let plainCurrentText = quillRef.current.getText();
+    const textLength = quillRef.current.getLength();
+
+
+    if (plainCurrentText.endsWith('\n')) {
+      plainCurrentText = plainCurrentText.slice(0, -1);
+    }
+
+    console.log({plainCurrentText})
+
+    const {addedParts, removedParts} = getNewCharactersWithIndices(plainInitialText,plainCurrentText)
+    console.log({addedParts})
+    addedParts?.forEach(newChar=>{
       quillRef.current.formatText(newChar?.index, newChar?.char.length, { background: '#90EE90' });
     })
+    setInitialText(plainCurrentText)
   };
 
   useEffect(() => {
@@ -41,24 +52,36 @@ function InputIndex() {
 
   function getNewCharactersWithIndices  (initialText, currentText)  {
     const diffArray = diffChars(initialText, currentText);
-  
+
     const addedPartsWithIndices = [];
+    const removedPartsWithIndices = []
     let currentIndex = 0;
   
     diffArray.forEach((change) => {
       if (!change.added && !change.removed) {
         currentIndex += change.value.length;
       }
-      if (change.added) {
+      else if (change.added) {
         addedPartsWithIndices.push({
+          added : change?.added,
+          removed : change?.removed,
           char: change.value,      
           index: currentIndex      
         });
         currentIndex += change.value.length;  
       }
+      else if ( change?.removed) {
+        removedPartsWithIndices.push({
+          added : change?.added,
+          removed : change?.removed,
+          char: change.value,      
+          index: currentIndex      
+        });
+        currentIndex += change.value.length;
+      }
     });
-  
-    return addedPartsWithIndices;
+
+    return {addedParts : addedPartsWithIndices, removedParts : removedPartsWithIndices};
   };
 
   return (
